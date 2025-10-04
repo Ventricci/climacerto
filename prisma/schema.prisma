@@ -1,0 +1,56 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model city {
+  id           Int            @id @default(autoincrement())
+  nome         String         @db.VarChar(100)
+  neighborhood neighborhood[]
+}
+
+model climate {
+  id              Int          @id @default(autoincrement())
+  temperature     Float?
+  ndvi            Float?
+  particles       Float?
+  id_neighborhood Int
+  neighborhood    neighborhood @relation(fields: [id_neighborhood], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model neighborhood {
+  id       Int        @id @default(autoincrement())
+  nome     String     @db.VarChar(100)
+  id_city  Int
+  climate  climate[]
+  city     city       @relation(fields: [id_city], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  poligons poligons[]
+}
+
+model poligons {
+  id              Int          @id @default(autoincrement())
+  lat             Float
+  lon             Float
+  id_neighborhood Int
+  neighborhood    neighborhood @relation(fields: [id_neighborhood], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model spatial_ref_sys {
+  srid      Int     @id
+  auth_name String? @db.VarChar(256)
+  auth_srid Int?
+  srtext    String? @db.VarChar(2048)
+  proj4text String? @db.VarChar(2048)
+}
+
+model test_table {
+  id         Int       @id @default(autoincrement())
+  name       String
+  created_at DateTime? @default(now()) @db.Timestamp(6)
+}
