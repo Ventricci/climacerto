@@ -20,6 +20,14 @@ const eslintConfig = [
       "next-env.d.ts",
     ],
   },
+
+    {
+    // Adicione este objeto para desabilitar a regra
+    rules: {
+      "@typescript-eslint/no-this-alias": "off",
+    },
+  },
+  
 ];
 
 export default eslintConfig;
