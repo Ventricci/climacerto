@@ -1,7 +1,19 @@
 'use client';
 import { ComposableMap, Geographies, Geography } from "react-simple-map";
 
-export default function Map() {
+interface IProps {
+    selectedNeighborhood: string;
+    onNeighborhoodSelect?: (neighborhood: string) => void;
+}
+
+export default function Map({ selectedNeighborhood, onNeighborhoodSelect }: IProps) {
+    
+    const handleNeighborhoodClick = (geo: any) => {
+        const neighborhoodName = geo.properties.nome || 'Bairro não identificado';
+        if (onNeighborhoodSelect) {
+            onNeighborhoodSelect(neighborhoodName);
+        }
+    };
     return (
         <ComposableMap
             projection='geoMercator'
@@ -18,21 +30,25 @@ export default function Map() {
                         <Geography
                             key={geo.rsmKey}
                             geography={geo}
-                            fill="#d6d6da"
+                            fill={geo.properties.nome == selectedNeighborhood ? "#F53" : "#d6d6da"}
                             stroke="#ffffff"
                             strokeWidth={0.2}
+                            onClick={() => handleNeighborhoodClick(geo)}
                             style={{
                                 default: {
-                                    fill: "#d6d6da",
+                                    fill: geo.properties.nome == selectedNeighborhood ? "#F53" : "#d6d6da",
                                     outline: "none",
+                                    cursor: "pointer",
                                 },
                                 hover: {
                                     fill: "#F53",
                                     outline: "none",
+                                    cursor: "pointer",
                                 },
                                 pressed: {
                                     fill: "#E42",
                                     outline: "none",
+                                    cursor: "pointer",
                                 },
                             }}
                         />

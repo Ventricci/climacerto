@@ -2,7 +2,7 @@
 import { ChartContainer } from "./style";
 import { LineChart } from "@mui/x-charts/LineChart";
 
-interface LinesChartProps {
+interface IProps {
     xaxis: string[];
     series: {
         data: number[];
@@ -11,7 +11,7 @@ interface LinesChartProps {
     }[];
 }
 
-export default function LinesChart({ xaxis, series }: LinesChartProps) {
+export default function LinesChart({ xaxis, series }: IProps) {
     return (
         <ChartContainer>
             <LineChart

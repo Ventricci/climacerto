@@ -1,5 +1,5 @@
 'use client';
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Map, Card, Sidebar, BarsChart, LinesChart } from "@/components";
 import styles from "./page.module.css";
 
@@ -42,12 +42,15 @@ export default function Home() {
 
   const handleNeighborhoodSelect = (neighborhoodName: string) => {
     setNeighborhood(neighborhoodName);
-    console.log('Bairro selecionado:', neighborhoodName);
   };
+
+  useEffect(() => {
+    console.log(neighborhood);
+  }, [neighborhood])
 
   return (
     <div className={styles.page}>
-      <Sidebar>
+      <Sidebar title={neighborhood}>
         <BarsChart xaxis={temperatureMock.years} yaxis={temperatureMock.values} label="Temperatura (°C)" />
         <LinesChart xaxis={nvdiChart.xaxis} series={nvdiChart.series} />
         <LinesChart xaxis={nvdiXparticlesChart.xaxis} series={nvdiXparticlesChart.series} />
@@ -56,11 +59,11 @@ export default function Home() {
         <Card icon="temperature" value="23°C" description="Última Temperatura" />
         <Card icon="ndvi" value="0,65" description="Índice NDVI" />
         <Card icon="aod" value="0,21" description="Índice AOD" />
-        {neighborhood && (
-          <Card icon="location" value={neighborhood} description="Bairro Selecionado" />
-        )}
       </div>
-      <Map selectedNeighborhood={neighborhood} onNeighborhoodSelect={handleNeighborhoodSelect} />
+      <Map
+        onNeighborhoodSelect={handleNeighborhoodSelect}
+        selectedNeighborhood={neighborhood}
+      />
     </div>
   );
 }

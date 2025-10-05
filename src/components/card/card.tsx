@@ -3,19 +3,20 @@ import { Typography } from "@mui/material";
 import { DeviceThermostatOutlined, Forest, Air } from '@mui/icons-material';
 import { CardContainer, CardHeader, CardBody, CardFooter, IconContainer } from "./style";
 
-interface ICardProps {
+interface IProps {
     icon: string;
     value: string;
     description: string;
 }
 
-export default function Card({ icon, value, description }: ICardProps) {
+export default function Card({ icon, value, description }: IProps) {
     return (
         <CardContainer>
             <CardHeader>
                 {icon == "temperature" && <IconContainer><DeviceThermostatOutlined sx={{ fontSize: 25, color: '#ff6b35' }} /></IconContainer>}
                 {icon == "ndvi" && <IconContainer><Forest sx={{ fontSize: 25, color: '#4caf50' }} /></IconContainer>}
                 {icon == "aod" && <IconContainer><Air sx={{ fontSize: 25, color: '#3F51B5' }} /></IconContainer>}
+
             </CardHeader>
             <CardBody>
                 <Typography fontSize={"2rem"} sx={{ color: '#333', fontWeight: 'bold' }}>{value}</Typography>

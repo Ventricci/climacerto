@@ -14,7 +14,7 @@ interface SidebarProps {
 
 export default function Sidebar({
     children,
-    title = "Dados Climáticos",
+    title,
 }: SidebarProps) {
     const [position, setPosition] = useState(0);
     const [isDragging, setIsDragging] = useState(false);
