@@ -7,13 +7,15 @@ interface IProps {
 }
 
 export default function Map({ selectedNeighborhood, onNeighborhoodSelect }: IProps) {
-    
-    const handleNeighborhoodClick = (geo: any) => {
+
+    const handleNeighborhoodClick = async (geo: any) => {
         const neighborhoodName = geo.properties.nome || 'Bairro não identificado';
+
         if (onNeighborhoodSelect) {
             onNeighborhoodSelect(neighborhoodName);
         }
     };
+    
     return (
         <ComposableMap
             projection='geoMercator'
@@ -56,6 +58,5 @@ export default function Map({ selectedNeighborhood, onNeighborhoodSelect }: IPro
                 }
             </Geographies>
         </ComposableMap>
-
     )
 }
