@@ -127,38 +127,35 @@ export default function Sidebar({
     }, [isDragging, dragStart, position, initialWidth]);
 
     return (
-        <>
+        <SidebarContainer
+            ref={sidebarRef}
+            width={initialWidth}
+            style={{ transform: `translateX(${position}px)` }}
+            onMouseDown={handleMouseDown}
+            onTouchStart={handleTouchStart}
+        >
+            <SidebarHeader style={{ cursor: isDragging ? 'grabbing' : 'grab' }}>
+                <h3>{title}</h3>
+            </SidebarHeader>
 
-            <SidebarContainer
-                ref={sidebarRef}
-                width={initialWidth}
-                style={{ transform: `translateX(${position}px)` }}
-                onMouseDown={handleMouseDown}
-                onTouchStart={handleTouchStart}
-            >
-                <SidebarHeader style={{ cursor: isDragging ? 'grabbing' : 'grab' }}>
-                    <h3>{title}</h3>
-                </SidebarHeader>
-
-                <SidebarContent>
-                    {children || (
-                        <>
-                            <PlaceholderChart>
-                                Demografia - Renda
-                            </PlaceholderChart>
-                            <PlaceholderChart>
-                                Demografia - Renda per capita
-                            </PlaceholderChart>
-                            <PlaceholderChart>
-                                Temperatura e NDVI por ano
-                            </PlaceholderChart>
-                            <PlaceholderChart>
-                                Tendências - Temperatura e NDVI
-                            </PlaceholderChart>
-                        </>
-                    )}
-                </SidebarContent>
-            </SidebarContainer>
-        </>
+            <SidebarContent>
+                {children || (
+                    <>
+                        <PlaceholderChart>
+                            Demografia - Renda
+                        </PlaceholderChart>
+                        <PlaceholderChart>
+                            Demografia - Renda per capita
+                        </PlaceholderChart>
+                        <PlaceholderChart>
+                            Temperatura e NDVI por ano
+                        </PlaceholderChart>
+                        <PlaceholderChart>
+                            Tendências - Temperatura e NDVI
+                        </PlaceholderChart>
+                    </>
+                )}
+            </SidebarContent>
+        </SidebarContainer>
     );
 }
