@@ -142,16 +142,13 @@ export default function Sidebar({
                 {children || (
                     <>
                         <PlaceholderChart>
-                            Demografia - Renda
+                            Temperatura - Últimos 5 anos
                         </PlaceholderChart>
                         <PlaceholderChart>
-                            Demografia - Renda per capita
+                            NDVI - Últimos 5 anos
                         </PlaceholderChart>
                         <PlaceholderChart>
-                            Temperatura e NDVI por ano
-                        </PlaceholderChart>
-                        <PlaceholderChart>
-                            Tendências - Temperatura e NDVI
+                            NDVI por AOD - Últimos 5 anos
                         </PlaceholderChart>
                     </>
                 )}
