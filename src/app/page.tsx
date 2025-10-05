@@ -3,39 +3,8 @@ import { useEffect, useState } from "react";
 import { Map, Card, Sidebar, BarsChart, LinesChart } from "@/components";
 import styles from "./page.module.css";
 
-const temperatureMock = {
-  years: ["2018", "2019", "2020", "2021", "2022"],
-  values: [22, 23, 21, 24, 23],
-};
+const years = ["2018", "2019", "2020", "2021", "2022"];
 
-// Dados preparados para o gráfico de linhas com múltiplas séries
-const nvdiChart = {
-  xaxis: ["2018", "2019", "2020", "2021", "2022"],
-  series: [
-    {
-      data: [0.6, 0.65, 0.63, 0.66, 0.64], // NDVI multiplicado por 100 para melhor visualização
-      label: "NDVI",
-      color: "#4caf50"
-    }
-  ]
-};
-
-// Dados preparados para o gráfico de linhas com múltiplas séries
-const nvdiXparticlesChart = {
-  xaxis: ["2018", "2019", "2020", "2021", "2022"],
-  series: [
-    {
-      data: [0.6, 0.65, 0.63, 0.66, 0.64], // NDVI multiplicado por 100 para melhor visualização
-      label: "NDVI",
-      color: "#4caf50"
-    },
-    {
-      data: [0.3, 0.21, 0.83, 0.8, 0.75], // NDVI multiplicado por 100 para melhor visualização
-      label: "AOD",
-      color: "#3F51B5"
-    }
-  ]
-};
 export default function Home() {
 
   const [neighborhood, setNeighborhood] = useState({ id: "", nome: "Série Histórica" });
@@ -44,6 +13,13 @@ export default function Home() {
     ndvi: number | null;
     aod: number | null;
   }>({ temperature: null, ndvi: null, aod: null });
+  const [series, setSeries] = useState<{
+    temperatures: number[];
+    ndvis: number[];
+    aods: number[];
+  }>({
+    temperatures: [], ndvis: [], aods: []
+  });
   const [neighborhoodList, setNeighborhoodList] = useState<any[]>([]);
 
   const handleNeighborhoodSelect = (neighborhoodName: string) => {
@@ -72,7 +48,7 @@ export default function Home() {
 
   const getNeighborhoodDetails = async () => {
     try {
-      const response = await fetch(`/api/neighborhood_details?id_neighborhood=${neighborhood.id}&anoInicio=2017&anoFim=2022`, {
+      const response = await fetch(`/api/neighborhood_details?id_neighborhood=${neighborhood.id}&anoInicio=2018&anoFim=2022`, {
         method: 'GET',
       });
 
@@ -81,7 +57,19 @@ export default function Home() {
       }
 
       const data = await response.json();
-      console.log(data);
+      const temperatures: any[] = [];
+      const ndvis: any[] = [];
+      const aods: any[] = [];
+      data.forEach((item: any) => {
+        temperatures.push(item.temperature);
+        ndvis.push(item.ndvi);
+        aods.push(item.particles);
+      });
+      setSeries({
+        temperatures: temperatures,
+        ndvis: ndvis,
+        aods: aods
+      });
     } catch (error) {
       return null;
     }
@@ -107,15 +95,20 @@ export default function Home() {
   }, [neighborhood, neighborhoodList]);
 
   useEffect(() => {
+    console.log(series);
+  }, [series]);
+
+  useEffect(() => {
     getNeighborhoodList();
   }, []);
 
   return (
     <div className={styles.page}>
       <Sidebar title={neighborhood.nome}>
-        <BarsChart xaxis={temperatureMock.years} yaxis={temperatureMock.values} label="Temperatura (°C)" />
-        <LinesChart xaxis={nvdiChart.xaxis} series={nvdiChart.series} />
-        <LinesChart xaxis={nvdiXparticlesChart.xaxis} series={nvdiXparticlesChart.series} />
+        {neighborhood.nome !== "Série Histórica" && <>
+          <BarsChart xaxis={years} yaxis={series.temperatures} label="Temperatura (°C)" />
+          <LinesChart xaxis={years} series={[{ data: series.ndvis, label: "NDVI", color: "#4caf50" }]} />
+          <LinesChart xaxis={years} series={[{ data: series.ndvis, label: "NDVI", color: "#4caf50" }, { data: series.aods, label: "AOD", color: "#3F51B5" }]} /></>}
       </Sidebar>
       <div className={styles.cardsContainer}>
         <Card
