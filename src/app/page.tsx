@@ -1,95 +1,143 @@
-import Image from "next/image";
+'use client';
+import { useEffect, useState } from "react";
+import { Map, Card, Sidebar, BarsChart, LinesChart } from "@/components";
 import styles from "./page.module.css";
 
+const temperatureMock = {
+  years: ["2018", "2019", "2020", "2021", "2022"],
+  values: [22, 23, 21, 24, 23],
+};
+
+// Dados preparados para o gráfico de linhas com múltiplas séries
+const nvdiChart = {
+  xaxis: ["2018", "2019", "2020", "2021", "2022"],
+  series: [
+    {
+      data: [0.6, 0.65, 0.63, 0.66, 0.64], // NDVI multiplicado por 100 para melhor visualização
+      label: "NDVI",
+      color: "#4caf50"
+    }
+  ]
+};
+
+// Dados preparados para o gráfico de linhas com múltiplas séries
+const nvdiXparticlesChart = {
+  xaxis: ["2018", "2019", "2020", "2021", "2022"],
+  series: [
+    {
+      data: [0.6, 0.65, 0.63, 0.66, 0.64], // NDVI multiplicado por 100 para melhor visualização
+      label: "NDVI",
+      color: "#4caf50"
+    },
+    {
+      data: [0.3, 0.21, 0.83, 0.8, 0.75], // NDVI multiplicado por 100 para melhor visualização
+      label: "AOD",
+      color: "#3F51B5"
+    }
+  ]
+};
 export default function Home() {
+
+  const [neighborhood, setNeighborhood] = useState({ id: "", nome: "Série Histórica" });
+  const [climate, setClimate] = useState<{
+    temperature: number | null;
+    ndvi: number | null;
+    aod: number | null;
+  }>({ temperature: null, ndvi: null, aod: null });
+  const [neighborhoodList, setNeighborhoodList] = useState<any[]>([]);
+
+  const handleNeighborhoodSelect = (neighborhoodName: string) => {
+    const neighborhood_id = neighborhoodList.find((item: any) =>
+      item.nome === neighborhood.nome
+    )?.id;
+    setNeighborhood({ id: neighborhood_id, nome: neighborhoodName });
+  };
+
+  const getNeighborhoodList = async () => {
+    try {
+      const response = await fetch(`/api/neighborhood_list`, {
+        method: 'GET',
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      setNeighborhoodList(data.neighborhood_list);
+    } catch (error) {
+      return null;
+    }
+  }
+
+  const getNeighborhoodDetails = async () => {
+    try {
+      const response = await fetch(`/api/neighborhood_details?id_neighborhood=${neighborhood.id}&anoInicio=2017&anoFim=2022`, {
+        method: 'GET',
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log(data);
+    } catch (error) {
+      return null;
+    }
+  }
+
+  useEffect(() => {
+    if (neighborhood && neighborhoodList.length > 0) {
+      const selectedNeighborhoodData = neighborhoodList.find((item: any) =>
+        item.nome === neighborhood.nome
+      );
+
+      if (selectedNeighborhoodData) {
+        setClimate({
+          temperature: selectedNeighborhoodData.climate[0].temperature || selectedNeighborhoodData.temperatura || null,
+          ndvi: selectedNeighborhoodData.climate[0].ndvi || null,
+          aod: selectedNeighborhoodData.climate[0].particles || null
+        });
+        getNeighborhoodDetails();
+      } else {
+        setClimate({ temperature: null, ndvi: null, aod: null });
+      }
+    }
+  }, [neighborhood, neighborhoodList]);
+
+  useEffect(() => {
+    getNeighborhoodList();
+  }, []);
+
   return (
     <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
+      <Sidebar title={neighborhood.nome}>
+        <BarsChart xaxis={temperatureMock.years} yaxis={temperatureMock.values} label="Temperatura (°C)" />
+        <LinesChart xaxis={nvdiChart.xaxis} series={nvdiChart.series} />
+        <LinesChart xaxis={nvdiXparticlesChart.xaxis} series={nvdiXparticlesChart.series} />
+      </Sidebar>
+      <div className={styles.cardsContainer}>
+        <Card
+          icon="temperature"
+          value={climate.temperature !== null ? `${climate.temperature.toFixed(1)}°C` : "N/A"}
+          description="Última Temperatura"
         />
-        <ol>
-          <li>
-            Get started by editing <code>src/app/page.tsx</code>.
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
-
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.secondary}
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className={styles.footer}>
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+        <Card
+          icon="ndvi"
+          value={climate.ndvi !== null ? climate.ndvi.toFixed(2) : "N/A"}
+          description="Índice NDVI"
+        />
+        <Card
+          icon="aod"
+          value={climate.aod !== null ? climate.aod.toFixed(2) : "N/A"}
+          description="Índice AOD"
+        />
+      </div>
+      <Map
+        onNeighborhoodSelect={handleNeighborhoodSelect}
+        selectedNeighborhood={neighborhood.nome}
+      />
     </div>
   );
 }
