@@ -7,7 +7,7 @@
     "build": "next build ",
     "start": "next start",
     "lint": "eslint",
-    "postinstall": "prisma generate" 
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@emotion/cache": "^11.14.0",
@@ -21,7 +21,7 @@
     "@vis.gl/react-google-maps": "^1.5.5",
     "crypto": "^1.0.1",
     "framer-motion": "^12.23.22",
-    "next": "15.5.4",
+    "next": "15.5.9",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "react-simple-map": "^3.0.2",
